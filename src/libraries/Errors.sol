@@ -13,4 +13,6 @@ library Errors {
     error TimelockActive();
     error NoPendingUpdate();
     error NotBackupWallet();
+    error AlreadyHasIdentity();
+    error DuplicateEndorsement();
 }
