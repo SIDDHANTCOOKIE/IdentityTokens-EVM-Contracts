@@ -90,7 +90,7 @@
 
 To understand the development process, contribution flow, and project structure, please refer to the detailed workflow guide:
 
-👉 [View Workflow](./docs/workflow.md)
+👉 [View Workflow](docs/WORKFLOWS.md)
 
 ---
 
