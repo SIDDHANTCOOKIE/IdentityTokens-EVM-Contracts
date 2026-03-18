@@ -170,6 +170,7 @@ forge build --sizes
 forge clean
 ```
 
+We appreciate your feedback and contributions!
 ---
 
 <p align="center">
