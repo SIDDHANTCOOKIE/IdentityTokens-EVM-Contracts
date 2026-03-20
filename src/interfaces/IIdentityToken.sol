@@ -5,9 +5,29 @@ import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { IERC721Metadata } from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 
 interface IIdentityToken is IERC721, IERC721Metadata {
+    // -------------------------------------------------------------------------
+    // Attribute management
+    // -------------------------------------------------------------------------
+
     function setAttribute(uint256 tokenId, string calldata key, bytes calldata value) external;
 
+    function getAttribute(uint256 tokenId, string calldata key) external view returns (bytes memory);
+
+    function setAttributesBatch(uint256 tokenId, string[] calldata keys, bytes[] calldata values) external;
+
+    function setName(uint256 tokenId, string calldata name) external;
+
+    function setGithub(uint256 tokenId, string calldata github) external;
+
+    // -------------------------------------------------------------------------
+    // Endorsements
+    // -------------------------------------------------------------------------
+
     function endorse(uint256 fromTokenId, uint256 toTokenId, bytes32 connectionType, uint256 validUntil) external;
+
+    // -------------------------------------------------------------------------
+    // View helpers
+    // -------------------------------------------------------------------------
 
     function ownerToTokenId(address owner) external view returns (uint256);
 

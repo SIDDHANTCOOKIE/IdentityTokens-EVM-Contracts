@@ -84,11 +84,50 @@ contract IdentityToken is ERC721, IIdentityToken {
         string calldata key,
         bytes calldata value
     ) external onlyTokenOwner(tokenId) notCompromised(tokenId) {
-        bytes32 keyHash = keccak256(abi.encodePacked(key));
+        _setAttribute(tokenId, key, value);
+    }
 
-        attributes[tokenId][keyHash] = value;
+    /**
+     * @dev Returns the raw bytes value for a given string key on a token.
+     *      Convenience wrapper: callers supply the human-readable key string
+     *      instead of computing keccak256 manually.
+     */
+    function getAttribute(uint256 tokenId, string calldata key) external view returns (bytes memory) {
+        return attributes[tokenId][keccak256(abi.encodePacked(key))];
+    }
 
-        emit Events.AttributeSet(tokenId, keyHash, value);
+    /**
+     * @dev Sets multiple attributes in a single transaction.
+     *      keys and values must have equal length.
+     *      Emits AttributeSet for every entry.
+     */
+    function setAttributesBatch(
+        uint256 tokenId,
+        string[] calldata keys,
+        bytes[] calldata values
+    ) external onlyTokenOwner(tokenId) notCompromised(tokenId) {
+        if (keys.length != values.length) revert Errors.ArrayLengthMismatch();
+
+        for (uint256 i = 0; i < keys.length; i++) {
+            _setAttribute(tokenId, keys[i], values[i]);
+        }
+    }
+
+    /**
+     * @dev Convenience setter for the "name" attribute.
+     */
+    function setName(uint256 tokenId, string calldata name) external onlyTokenOwner(tokenId) notCompromised(tokenId) {
+        _setAttribute(tokenId, "name", bytes(name));
+    }
+
+    /**
+     * @dev Convenience setter for the "github" attribute.
+     */
+    function setGithub(
+        uint256 tokenId,
+        string calldata github
+    ) external onlyTokenOwner(tokenId) notCompromised(tokenId) {
+        _setAttribute(tokenId, "github", bytes(github));
     }
 
     /**
@@ -127,5 +166,22 @@ contract IdentityToken is ERC721, IIdentityToken {
         endorsements[toTokenId].push(newEndorsement);
 
         emit Events.EndorsementGiven(fromTokenId, toTokenId, connectionType, validUntil);
+    }
+
+    // -------------------------------------------------------------------------
+    // Internal
+    // -------------------------------------------------------------------------
+
+    /**
+     * @dev Core write path shared by setAttribute, setAttributesBatch, and
+     *      the typed helper setters. Hashes the key, stores the value, and
+     *      emits AttributeSet with the original key string for off-chain indexing.
+     */
+    function _setAttribute(uint256 tokenId, string memory key, bytes memory value) internal {
+        bytes32 keyHash = keccak256(abi.encodePacked(key));
+
+        attributes[tokenId][keyHash] = value;
+
+        emit Events.AttributeSet(tokenId, keyHash, key, value);
     }
 }
