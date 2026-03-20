@@ -391,11 +391,9 @@ contract IdentityTokenTest is Test {
         uint256 tokenId = identityToken.mint();
 
         // Use stdStorage to set isCompromised without hardcoding a slot
-        stdstore
-        .target(address(identityToken))
-        .sig("identityStates(uint256)")
-        .with_key(tokenId)
-        .depth(0).checked_write(true); // isCompromised is the first field in IdentityState
+        stdstore.target(address(identityToken)).sig("identityStates(uint256)").with_key(tokenId).depth(0).checked_write(
+            true
+        ); // isCompromised is the first field in IdentityState
 
         vm.prank(alice);
         vm.expectRevert(Errors.IdentityCompromised.selector);
