@@ -478,6 +478,24 @@ contract IdentityTokenTest is Test {
         assertTrue(identityToken.isVerified(bobId));
     }
 
+    function test_IsVerified_FalseIfEndorserCompromised() public {
+        vm.prank(alice);
+        uint256 aliceId = identityToken.mint();
+
+        vm.prank(bob);
+        uint256 bobId = identityToken.mint();
+
+        bytes32 connectionType = keccak256(abi.encodePacked("Colleague"));
+        vm.prank(alice);
+        identityToken.endorse(aliceId, bobId, connectionType, 0);
+
+        stdstore.target(address(identityToken)).sig("identityStates(uint256)").with_key(aliceId).depth(0).checked_write(
+            true
+        );
+
+        assertFalse(identityToken.isVerified(bobId));
+    }
+
     function test_IsVerified_FalseWithExpiredEndorsement() public {
         vm.prank(alice);
         uint256 aliceId = identityToken.mint();
