@@ -242,7 +242,9 @@ contract IdentityToken is ERC721, IIdentityToken {
         DataTypes.Endorsement[] storage list = endorsements[tokenId];
         for (uint256 i = 0; i < list.length; i++) {
             DataTypes.Endorsement storage e = list[i];
-            bool active = e.revokedAt == 0 && (e.validUntil == 0 || e.validUntil >= block.timestamp) && !identityStates[e.endorserTokenId].isCompromised;
+            bool active = e.revokedAt == 0 &&
+                (e.validUntil == 0 || e.validUntil >= block.timestamp) &&
+                !identityStates[e.endorserTokenId].isCompromised;
             if (active) return true;
         }
         return false;
