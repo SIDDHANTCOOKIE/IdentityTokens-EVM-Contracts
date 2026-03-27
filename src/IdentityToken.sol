@@ -12,6 +12,7 @@ contract IdentityToken is ERC721, IIdentityToken {
     error NonTransferable();
 
     uint256 private _nextTokenId = 1;
+    uint256 public constant MAX_ENDORSEMENTS = 100;
 
     // wallet => tokenId (enforce one identity per wallet)
     mapping(address => uint256) public ownerToTokenId;
@@ -160,6 +161,7 @@ contract IdentityToken is ERC721, IIdentityToken {
         if (_ownerOf(toTokenId) == address(0)) revert Errors.TargetInvalid();
 
         DataTypes.Endorsement[] storage list = endorsements[toTokenId];
+        if (list.length >= MAX_ENDORSEMENTS) revert Errors.IndexOutOfBounds();
 
         // prevent duplicate active endorsements
         for (uint256 i = 0; i < list.length; i++) {

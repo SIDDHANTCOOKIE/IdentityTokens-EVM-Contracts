@@ -288,6 +288,23 @@ contract IdentityTokenTest is Test {
         assertEq(revokedAt, 0);
     }
 
+    function test_RevertIf_MaxEndorsementsReached() public {
+        vm.prank(alice);
+        uint256 aliceId = identityToken.mint();
+
+        vm.prank(bob);
+        uint256 bobId = identityToken.mint();
+
+        for (uint256 i = 0; i < 100; i++) {
+            vm.prank(alice);
+            identityToken.endorse(aliceId, bobId, keccak256(abi.encodePacked("Connection", i)), 0);
+        }
+
+        vm.prank(alice);
+        vm.expectRevert(Errors.IndexOutOfBounds.selector);
+        identityToken.endorse(aliceId, bobId, keccak256(abi.encodePacked("Connection", uint256(100))), 0);
+    }
+
     // --- deleteAttribute ---
 
     function test_DeleteAttribute() public {
